@@ -1,0 +1,46 @@
+# XcodeGen spec — run `xcodegen generate` from this directory to produce GravityWallpaper.xcodeproj
+name: GravityWallpaper
+
+options:
+  bundleIdPrefix: com.universe-screen
+  deploymentTarget:
+    macOS: "26.0"
+  xcodeVersion: "26.0"
+  createIntermediateGroups: true
+
+targets:
+  GravityWallpaper:
+    type: application
+    platform: macOS
+    deploymentTarget: "26.0"
+
+    sources:
+      - path: Sources
+        excludes: []
+      - path: Resources
+        type: folder
+        buildPhase: resources
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.universe-screen.gravity-wallpaper
+        INFOPLIST_KEY_LSUIElement: YES               # hide from Dock
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        INFOPLIST_KEY_CFBundleName: GravityWallpaper
+        METAL_ENABLE_DEBUG_INFO: INCLUDE_SOURCE      # remove for release
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: Resources/GravityWallpaper.entitlements
+        SWIFT_VERSION: "6.0"
+        MACOSX_DEPLOYMENT_TARGET: "26.0"
+
+    info:
+      path: Resources/Info.plist
+      properties:
+        LSUIElement: true
+        NSPrincipalClass: NSApplication
+        CFBundleName: GravityWallpaper
+        CFBundleIdentifier: com.universe-screen.gravity-wallpaper
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0"
+        NSHighResolutionCapable: true
+        NSAppleEventsUsageDescription: "Universe Screen reads desktop folder positions from Finder so planets line up with where your folders sit on the desktop."
