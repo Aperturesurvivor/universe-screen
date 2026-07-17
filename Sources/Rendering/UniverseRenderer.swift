@@ -27,6 +27,7 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
 
     private let planetRenderer:    PlanetRenderer
     private let asteroidRenderer:  AsteroidRenderer
+    private let agentRenderer:     AgentRenderer
     private let labelRenderer:     LabelRenderer
     private let starRenderer:      StarRenderer
     private let blackHoleRenderer: BlackHoleRenderer
@@ -42,6 +43,8 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
     private let startTime = CACurrentMediaTime()
     private var lastFrameTime    = CACurrentMediaTime()
     private var lastLabelUploadTime = CACurrentMediaTime()
+    private var fpsWindowStart = CACurrentMediaTime()
+    private var fpsFrameCount = 0
     private var currentZoomScale: Float = 1.0
     private var targetZoomScale:  Float = 1.0
     private var focus: FocusState?
@@ -77,15 +80,22 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
 
         guard let lib = device.makeDefaultLibrary() else { throw RendererError.noMetalLibrary }
 
-        mesh = SphereMesh.make(device: device, latSegments: 112, lonSegments: 168)
+        // The procedural fragment shaders supply most of the visual detail. A
+        // moderate surface mesh keeps planets smooth while avoiding tens of
+        // thousands of unnecessary triangles for every tiny asteroid.
+        mesh = SphereMesh.make(device: device, latSegments: 64, lonSegments: 96)
+        let asteroidMesh = SphereMesh.make(device: device, latSegments: 20, lonSegments: 32)
 
         do {
             planetRenderer    = try PlanetRenderer(device: device, library: lib, mesh: mesh,
                                                    sampleCount: Self.sampleCount,
                                                    depthFormat: Self.depthFormat)
-            asteroidRenderer  = try AsteroidRenderer(device: device, library: lib, mesh: mesh,
+            asteroidRenderer  = try AsteroidRenderer(device: device, library: lib, mesh: asteroidMesh,
                                                      sampleCount: Self.sampleCount,
                                                      depthFormat: Self.depthFormat)
+            agentRenderer     = try AgentRenderer(device: device, library: lib,
+                                                  sampleCount: Self.sampleCount,
+                                                  depthFormat: Self.depthFormat)
             labelRenderer     = try LabelRenderer(device: device, library: lib,
                                                   sampleCount: Self.sampleCount,
                                                   depthFormat: Self.depthFormat)
@@ -117,15 +127,13 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
         if focus != nil { return }
         planetRenderer.updateBuffer(planets: universe.planets)
         asteroidRenderer.updateBuffer(asteroids: universe.asteroids)
+        agentRenderer.update(agents: config.showCodexAgents ? universe.agents : [])
         starRenderer.update(star: universe.star)
         blackHoleRenderer.update(blackHole: universe.blackHole)
         starfieldRenderer.regenerateIfNeeded(
             seed:   universe.seed,
             params: backgroundRenderer.params(for: universe.seed))
-        labelRenderer.updateLabels(
-            positions: universe.planets.map(\.position),
-            radii:     universe.planets.map(\.radius),
-            names:     universe.planets.map(\.name))
+        rebuildOrbitalLabels()
         let starCenter = SIMD3(Float(universe.screenSize.width)  * 0.5,
                                0,
                                Float(universe.screenSize.height) * 0.5)
@@ -139,7 +147,29 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
         if focus != nil { return }
         planetRenderer.updateBuffer(planets: universe.planets)
         asteroidRenderer.updateBuffer(asteroids: universe.asteroids)
-        labelRenderer.updateLabelPositions(planets: universe.planets)
+        agentRenderer.update(agents: config.showCodexAgents ? universe.agents : [])
+        updateOrbitalLabelPositions()
+    }
+
+    func refreshAgents() {
+        guard focus == nil else { return }
+        agentRenderer.update(agents: config.showCodexAgents ? universe.agents : [])
+        rebuildOrbitalLabels()
+    }
+
+    private func rebuildOrbitalLabels() {
+        let visibleAgents = config.showCodexAgents ? universe.agents : []
+        labelRenderer.updateLabels(
+            positions: universe.planets.map(\.position) + visibleAgents.map(\.position),
+            radii: universe.planets.map(\.radius) + visibleAgents.map(\.radius),
+            names: universe.planets.map(\.name) + visibleAgents.map(\.name))
+    }
+
+    private func updateOrbitalLabelPositions() {
+        let visibleAgents = config.showCodexAgents ? universe.agents : []
+        labelRenderer.updateLabelPositions(
+            positions: universe.planets.map(\.position) + visibleAgents.map(\.position),
+            radii: universe.planets.map(\.radius) + visibleAgents.map(\.radius))
     }
 
     /// Star-only update — for browser change / network state flip.
@@ -367,6 +397,7 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
                                         labelUniforms: &labelUni, motion: &motionUni)
         planetRenderer.draw          (in: enc, camera: &camUni, motion: &motionUni)
         asteroidRenderer.draw        (in: enc, camera: &camUni, motion: &motionUni)
+        agentRenderer.draw           (in: enc, camera: &camUni, motion: &motionUni)
         starRenderer.drawLensFlare   (in: enc, camera: &camUni, motion: &motionUni,
                                       screenSize: drawableSize)
         if includeLabels {
@@ -394,15 +425,23 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
 
         // Advance orbits and push updated positions to the GPU.
         let now = CACurrentMediaTime()
+        fpsFrameCount += 1
+        let fpsElapsed = now - fpsWindowStart
+        if fpsElapsed >= 1.0 {
+            config.measuredFPS = Double(fpsFrameCount) / fpsElapsed
+            fpsFrameCount = 0
+            fpsWindowStart = now
+        }
         let dt  = Float(now - lastFrameTime)
         let time = Float(now - startTime)
         lastFrameTime = now
         if focus == nil {
             universe.tick(deltaTime: dt)
             planetRenderer.updateBuffer(planets: universe.planets)
+            agentRenderer.update(agents: config.showCodexAgents ? universe.agents : [])
             if now - lastLabelUploadTime >= 1.0 / 15.0 {
                 lastLabelUploadTime = now
-                labelRenderer.updateLabelPositions(planets: universe.planets)
+                updateOrbitalLabelPositions()
             }
         } else if var activeFocus = focus {
             planetRenderer.updateBuffer(planets: universe.planets.filter { $0.stableId != activeFocus.planet.stableId })

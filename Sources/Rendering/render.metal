@@ -15,7 +15,6 @@ struct PlanetGPU {
 
 struct MeshVertex {
     float3 position;
-    float  _pad;
 };
 
 struct CameraUniforms {

@@ -7,21 +7,23 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.universe-screen.gravity-wallpaper</string>
+	<string>com.josiah.universe-screen.sol</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>GravityWallpaper</string>
+	<string>Universe Screen</string>
+	<key>CFBundleDisplayName</key>
+	<string>Universe Screen</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>2.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Universe Screen reads desktop folder positions from Finder so planets line up with where your folders sit on the desktop.</string>
+	<string>Universe Screen can read Finder icon positions when your selected source is the Desktop.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSPrincipalClass</key>

@@ -8,14 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		005F00E7AE018B71E547C536 /* labels.metal in Sources */ = {isa = PBXBuildFile; fileRef = DB9E3FDEECECC643B17AA4B8 /* labels.metal */; };
+		00D1DA0BB1257F2AB281EB31 /* agent.metal in Sources */ = {isa = PBXBuildFile; fileRef = D189B7EB8AB0D6FF34C52ECB /* agent.metal */; };
+		00F630E8191391D41CF17A32 /* AgentBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5495D22F841CD5AECCE19518 /* AgentBody.swift */; };
+		1B82DD45F606CE5DE4110151 /* AgentRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C33D7081A250723F1F8F6D /* AgentRenderer.swift */; };
 		2380950EA8C156E7B3119D43 /* starfield.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CB38094BB5EE7241A7ED7 /* starfield.metal */; };
 		34AEFCFA9AC879F52A40E14E /* FolderPositions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F76F5CC8E8F6C7159B82B2 /* FolderPositions.swift */; };
 		3A52F13B5DC091FC07E232C5 /* render.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2C3EEAE756C11C25BEE59EF6 /* render.metal */; };
 		3C33AD69F7A1A324621E2AAD /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207F555726E1B731FCB873EB /* MenuBarController.swift */; };
 		432A6F0C2F992D2719AB9C7F /* orbit_ring.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2EC10FE11B821C09EC47300C /* orbit_ring.metal */; };
 		46A1273BAA3492BB10457A6A /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED78A7C84FA176C80A23F7A /* Camera.swift */; };
+		4BABBF653CC0DEB52E50C344 /* UniverseScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9A3F3EA710E168615F7A6F /* UniverseScreenTests.swift */; };
 		4C0D3CB8567F9F12C94F41B0 /* BackgroundRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45587336D84409A6FE86E51 /* BackgroundRenderer.swift */; };
 		596142A5245B2538FD4D97F8 /* PlanetRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66D52A06314BAE0DC85849C /* PlanetRenderer.swift */; };
+		5AA3F1A60729389E26F885C1 /* DashboardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D547E57929E1533CEFBD4FC2 /* DashboardModel.swift */; };
 		5C79EB1CA7B28D3ABDFA016F /* MathHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A7580E8959BFECA4E48D9A /* MathHelpers.swift */; };
 		6747021C1FFEC9522C37C752 /* PlanetBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C46E744EE5CB0CAA86F4952 /* PlanetBody.swift */; };
 		67AD1939DA6E8A1D716A46F2 /* DesktopFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81629DAADD8C6D54857587A3 /* DesktopFiles.swift */; };
@@ -26,16 +31,19 @@
 		762CE1C0B53910A817E9F7F4 /* AsteroidRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6BE798F0CB4036FF09A217 /* AsteroidRenderer.swift */; };
 		804C48BEE202166B56FB85D5 /* StarRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B471D6096C4CBED2D9CFC8B2 /* StarRenderer.swift */; };
 		83DDAA96C51623B83A18C57B /* blackhole.metal in Sources */ = {isa = PBXBuildFile; fileRef = F77FBFABC9A758F4B78A9AA6 /* blackhole.metal */; };
+		883C7B27FDBAB6D69AE1B995 /* CodexActivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892F593D72F3E8CE0C7A5162 /* CodexActivityMonitor.swift */; };
 		8841BFD2CDE944128FB1BE95 /* BlackHoleBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EB8CDB4F78E49504A28314 /* BlackHoleBody.swift */; };
 		89C0F3BFD95A5A4E062A2DEF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D2D9B22FE8111BFB841A1 /* main.swift */; };
 		8D5A097F39AD2CB8C4634D7A /* SphereMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73802B4CE5CC6B03D25185C8 /* SphereMesh.swift */; };
 		94B04EF6F3D819E707AE80DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6A0BD8A42AE70A3EFD5BBB /* AppDelegate.swift */; };
 		AAE49A7299B62DF39E7F7858 /* OrbitRingRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49E16E3ACEDC22EC8D861B /* OrbitRingRenderer.swift */; };
+		ADB06B1A696C76879A3E059A /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9060543C5E25A3AC07D50346 /* DashboardView.swift */; };
 		B12AD3F4361305642AD5AB4A /* SimulationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1E8D99B959EA9F72AC6C510 /* SimulationConfig.swift */; };
 		B56B8A33E79974F2BAB88751 /* LabelRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6219125FA0C453D66A1C2E90 /* LabelRenderer.swift */; };
 		B845E021D855F16A59880E65 /* StarBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C4C14084A4FF5A29E31B38 /* StarBody.swift */; };
 		C288883E3CD452ADF63046A4 /* star.metal in Sources */ = {isa = PBXBuildFile; fileRef = C26AEE0BF1FF00B87E221C87 /* star.metal */; };
 		C39A31996BF70B6A885CB78D /* Universe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2CBD5D108D891970506FE /* Universe.swift */; };
+		C497B4268AA9C8F81E423BF8 /* DashboardWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD964715BF9B5A3B9FCC254 /* DashboardWindowController.swift */; };
 		C91775FFD726E9C8B87A518D /* WallpaperWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D04A67845E41F59E332015C /* WallpaperWindowController.swift */; };
 		D1030B1B983998453A78E259 /* SharedUniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348ED0174C161D42FA6C8C2 /* SharedUniforms.swift */; };
 		D5601EA5562321820AEB441F /* UniverseRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DE242B459A5E7C13E470F6 /* UniverseRenderer.swift */; };
@@ -49,15 +57,27 @@
 		FD6D261CD20B7F52F3A79D7A /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07C832F848F2AD51E0D15D9 /* NetworkMonitor.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		FC5874349D9EF583877C839D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D21A9440FA71C0B479CDC612 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9674D14DBEAB69FEF8F5326;
+			remoteInfo = GravityWallpaper;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		05EB8CDB4F78E49504A28314 /* BlackHoleBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackHoleBody.swift; sourceTree = "<group>"; };
 		07DE242B459A5E7C13E470F6 /* UniverseRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniverseRenderer.swift; sourceTree = "<group>"; };
 		207F555726E1B731FCB873EB /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		2C3EEAE756C11C25BEE59EF6 /* render.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = render.metal; sourceTree = "<group>"; };
 		2EC10FE11B821C09EC47300C /* orbit_ring.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = orbit_ring.metal; sourceTree = "<group>"; };
+		388563F72ADC91BE6A3DCFBD /* UniverseScreenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UniverseScreenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		38DC781D312F50CAF14C682E /* DefaultBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultBrowser.swift; sourceTree = "<group>"; };
 		50F28D5FBAE2EF4B3DCB69BB /* CelestialBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestialBody.swift; sourceTree = "<group>"; };
 		53C6BB97A93822D2CCF53B1D /* noise.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = noise.h; sourceTree = "<group>"; };
+		5495D22F841CD5AECCE19518 /* AgentBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentBody.swift; sourceTree = "<group>"; };
 		5D0CB38094BB5EE7241A7ED7 /* starfield.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = starfield.metal; sourceTree = "<group>"; };
 		5D9BA25D652CFA6EB561A830 /* BlackHoleRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackHoleRenderer.swift; sourceTree = "<group>"; };
 		5DDA39D9F4FB1B9A099B5324 /* StarfieldRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarfieldRenderer.swift; sourceTree = "<group>"; };
@@ -65,7 +85,9 @@
 		6219125FA0C453D66A1C2E90 /* LabelRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelRenderer.swift; sourceTree = "<group>"; };
 		66A7580E8959BFECA4E48D9A /* MathHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathHelpers.swift; sourceTree = "<group>"; };
 		6CE6B3C1C9FB9F8B3216C676 /* Seed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seed.swift; sourceTree = "<group>"; };
+		6D9A3F3EA710E168615F7A6F /* UniverseScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniverseScreenTests.swift; sourceTree = "<group>"; };
 		73802B4CE5CC6B03D25185C8 /* SphereMesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SphereMesh.swift; sourceTree = "<group>"; };
+		76C33D7081A250723F1F8F6D /* AgentRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentRenderer.swift; sourceTree = "<group>"; };
 		7C46E744EE5CB0CAA86F4952 /* PlanetBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanetBody.swift; sourceTree = "<group>"; };
 		7C6A0BD8A42AE70A3EFD5BBB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7C6BE798F0CB4036FF09A217 /* AsteroidRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidRenderer.swift; sourceTree = "<group>"; };
@@ -73,6 +95,8 @@
 		7F49E16E3ACEDC22EC8D861B /* OrbitRingRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrbitRingRenderer.swift; sourceTree = "<group>"; };
 		81629DAADD8C6D54857587A3 /* DesktopFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopFiles.swift; sourceTree = "<group>"; };
 		8348ED0174C161D42FA6C8C2 /* SharedUniforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedUniforms.swift; sourceTree = "<group>"; };
+		892F593D72F3E8CE0C7A5162 /* CodexActivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexActivityMonitor.swift; sourceTree = "<group>"; };
+		9060543C5E25A3AC07D50346 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		9CA5C87050BD7CC05C9480D2 /* LabelAtlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelAtlas.swift; sourceTree = "<group>"; };
 		A1C2CBD5D108D891970506FE /* Universe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Universe.swift; sourceTree = "<group>"; };
 		B1E8D99B959EA9F72AC6C510 /* SimulationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationConfig.swift; sourceTree = "<group>"; };
@@ -83,7 +107,9 @@
 		C26AEE0BF1FF00B87E221C87 /* star.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = star.metal; sourceTree = "<group>"; };
 		C4C4C14084A4FF5A29E31B38 /* StarBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarBody.swift; sourceTree = "<group>"; };
 		C66D52A06314BAE0DC85849C /* PlanetRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanetRenderer.swift; sourceTree = "<group>"; };
+		D189B7EB8AB0D6FF34C52ECB /* agent.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = agent.metal; sourceTree = "<group>"; };
 		D1F76F5CC8E8F6C7159B82B2 /* FolderPositions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderPositions.swift; sourceTree = "<group>"; };
+		D547E57929E1533CEFBD4FC2 /* DashboardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardModel.swift; sourceTree = "<group>"; };
 		D899CA2F85A4EF05605425F3 /* DesktopFolders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopFolders.swift; sourceTree = "<group>"; };
 		DB9E3FDEECECC643B17AA4B8 /* labels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = labels.metal; sourceTree = "<group>"; };
 		DE44402A5E7635EB07D25B38 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = SOURCE_ROOT; };
@@ -91,6 +117,7 @@
 		F07C832F848F2AD51E0D15D9 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		F45587336D84409A6FE86E51 /* BackgroundRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRenderer.swift; sourceTree = "<group>"; };
 		F77FBFABC9A758F4B78A9AA6 /* blackhole.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = blackhole.metal; sourceTree = "<group>"; };
+		FFD964715BF9B5A3B9FCC254 /* DashboardWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardWindowController.swift; sourceTree = "<group>"; };
 		FFE9BE64B52BB144B16C09F5 /* AsteroidBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidBody.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,6 +126,9 @@
 			isa = PBXGroup;
 			children = (
 				61A05537E99A57973343BB88 /* ControlPanelViewController.swift */,
+				D547E57929E1533CEFBD4FC2 /* DashboardModel.swift */,
+				9060543C5E25A3AC07D50346 /* DashboardView.swift */,
+				FFD964715BF9B5A3B9FCC254 /* DashboardWindowController.swift */,
 				207F555726E1B731FCB873EB /* MenuBarController.swift */,
 				7D04A67845E41F59E332015C /* WallpaperWindowController.swift */,
 			);
@@ -125,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				BF343ECE6979B6EC1B62D295 /* GravityWallpaper.app */,
+				388563F72ADC91BE6A3DCFBD /* UniverseScreenTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -132,6 +163,7 @@
 		424A7C31642AE9D5BB71F03B /* Bodies */ = {
 			isa = PBXGroup;
 			children = (
+				5495D22F841CD5AECCE19518 /* AgentBody.swift */,
 				FFE9BE64B52BB144B16C09F5 /* AsteroidBody.swift */,
 				05EB8CDB4F78E49504A28314 /* BlackHoleBody.swift */,
 				7C46E744EE5CB0CAA86F4952 /* PlanetBody.swift */,
@@ -153,6 +185,7 @@
 		6EEBBFB0FB4D97D4BF47248D /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				892F593D72F3E8CE0C7A5162 /* CodexActivityMonitor.swift */,
 				38DC781D312F50CAF14C682E /* DefaultBrowser.swift */,
 				81629DAADD8C6D54857587A3 /* DesktopFiles.swift */,
 				D899CA2F85A4EF05605425F3 /* DesktopFolders.swift */,
@@ -183,6 +216,7 @@
 			children = (
 				DE44402A5E7635EB07D25B38 /* Resources */,
 				2AA03F014980E76679CC5E84 /* Sources */,
+				F47ED9181879C0F842122070 /* Tests */,
 				32B1A7857DD9A7F758E1F661 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -190,6 +224,8 @@
 		E9A1A9EBFAD6BA2CC55132DF /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
+				D189B7EB8AB0D6FF34C52ECB /* agent.metal */,
+				76C33D7081A250723F1F8F6D /* AgentRenderer.swift */,
 				BEC78CDE42972DCAB5C5BA53 /* asteroid.metal */,
 				7C6BE798F0CB4036FF09A217 /* AsteroidRenderer.swift */,
 				F45587336D84409A6FE86E51 /* BackgroundRenderer.swift */,
@@ -215,9 +251,35 @@
 			path = Rendering;
 			sourceTree = "<group>";
 		};
+		F47ED9181879C0F842122070 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				6D9A3F3EA710E168615F7A6F /* UniverseScreenTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		004C7E1B5763F6E5E5985018 /* UniverseScreenTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E13052E546C18C4053D0992 /* Build configuration list for PBXNativeTarget "UniverseScreenTests" */;
+			buildPhases = (
+				3000C16F97C8EB0237AD4D6D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4DDA46C77817ED58E4CF928 /* PBXTargetDependency */,
+			);
+			name = UniverseScreenTests;
+			packageProductDependencies = (
+			);
+			productName = UniverseScreenTests;
+			productReference = 388563F72ADC91BE6A3DCFBD /* UniverseScreenTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F9674D14DBEAB69FEF8F5326 /* GravityWallpaper */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC851F6FE0B40F8D894CEF3B /* Build configuration list for PBXNativeTarget "GravityWallpaper" */;
@@ -262,6 +324,7 @@
 			projectRoot = "";
 			targets = (
 				F9674D14DBEAB69FEF8F5326 /* GravityWallpaper */,
+				004C7E1B5763F6E5E5985018 /* UniverseScreenTests */,
 			);
 		};
 /* End PBXProject section */
@@ -278,10 +341,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3000C16F97C8EB0237AD4D6D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BABBF653CC0DEB52E50C344 /* UniverseScreenTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		73A4A0CD43DB43320C34609E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00F630E8191391D41CF17A32 /* AgentBody.swift in Sources */,
+				1B82DD45F606CE5DE4110151 /* AgentRenderer.swift in Sources */,
 				94B04EF6F3D819E707AE80DF /* AppDelegate.swift in Sources */,
 				E11A09CD8A31566787516EAA /* AsteroidBody.swift in Sources */,
 				762CE1C0B53910A817E9F7F4 /* AsteroidRenderer.swift in Sources */,
@@ -290,7 +363,11 @@
 				F26412E7EE7A076D78F01769 /* BlackHoleRenderer.swift in Sources */,
 				46A1273BAA3492BB10457A6A /* Camera.swift in Sources */,
 				D8B060AE2AD381E4ADBB5263 /* CelestialBody.swift in Sources */,
+				883C7B27FDBAB6D69AE1B995 /* CodexActivityMonitor.swift in Sources */,
 				726F768A748597F144145C83 /* ControlPanelViewController.swift in Sources */,
+				5AA3F1A60729389E26F885C1 /* DashboardModel.swift in Sources */,
+				ADB06B1A696C76879A3E059A /* DashboardView.swift in Sources */,
+				C497B4268AA9C8F81E423BF8 /* DashboardWindowController.swift in Sources */,
 				F6B995CEF7866C3CA4CD60B9 /* DefaultBrowser.swift in Sources */,
 				67AD1939DA6E8A1D716A46F2 /* DesktopFiles.swift in Sources */,
 				75CE2AAEAA75268D659A61DE /* DesktopFolders.swift in Sources */,
@@ -313,6 +390,7 @@
 				C39A31996BF70B6A885CB78D /* Universe.swift in Sources */,
 				D5601EA5562321820AEB441F /* UniverseRenderer.swift in Sources */,
 				C91775FFD726E9C8B87A518D /* WallpaperWindowController.swift in Sources */,
+				00D1DA0BB1257F2AB281EB31 /* agent.metal in Sources */,
 				6A2F2989B8D391B583B92186 /* asteroid.metal in Sources */,
 				83DDAA96C51623B83A18C57B /* blackhole.metal in Sources */,
 				005F00E7AE018B71E547C536 /* labels.metal in Sources */,
@@ -325,6 +403,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F4DDA46C77817ED58E4CF928 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9674D14DBEAB69FEF8F5326 /* GravityWallpaper */;
+			targetProxy = FC5874349D9EF583877C839D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2A00C41EDE093A129D3F9A07 /* Release */ = {
@@ -383,6 +469,42 @@
 			};
 			name = Release;
 		};
+		2C6C5A5FB78A101217415769 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.josiah.universe-screen.sol.tests";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Universe Screen.app/Contents/MacOS/Universe Screen";
+			};
+			name = Release;
+		};
+		5DEB8576863E9D17C68A5ACB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.josiah.universe-screen.sol.tests";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Universe Screen.app/Contents/MacOS/Universe Screen";
+			};
+			name = Debug;
+		};
 		80B60496EA3CACB97363A274 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -391,7 +513,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleName = GravityWallpaper;
+				INFOPLIST_KEY_CFBundleDisplayName = "Universe Screen";
+				INFOPLIST_KEY_CFBundleName = "Universe Screen";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -400,7 +523,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				METAL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.universe-screen.gravity-wallpaper";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.josiah.universe-screen.sol";
+				PRODUCT_NAME = "Universe Screen";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
 			};
@@ -477,7 +601,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleName = GravityWallpaper;
+				INFOPLIST_KEY_CFBundleDisplayName = "Universe Screen";
+				INFOPLIST_KEY_CFBundleName = "Universe Screen";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -485,8 +610,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				METAL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.universe-screen.gravity-wallpaper";
+				METAL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.josiah.universe-screen.sol";
+				PRODUCT_NAME = "Universe Screen";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
 			};
@@ -500,6 +626,15 @@
 			buildConfigurations = (
 				8C88BDFD8089B7CFAE62EF27 /* Debug */,
 				2A00C41EDE093A129D3F9A07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3E13052E546C18C4053D0992 /* Build configuration list for PBXNativeTarget "UniverseScreenTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5DEB8576863E9D17C68A5ACB /* Debug */,
+				2C6C5A5FB78A101217415769 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

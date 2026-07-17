@@ -61,4 +61,74 @@ struct SphereMesh {
             options: .storageModeShared)!
         return SphereMesh(vertexBuffer: vBuf, indexBuffer: iBuf, indexCount: idx.count)
     }
+
+    /// Evenly tessellated sphere with no UV seam or high-valence pole fans.
+    /// This is especially useful for displaced procedural bodies: every face
+    /// has a similar size, so local displacement cannot expose a pinched pole.
+    static func makeIcosphere(device: MTLDevice, subdivisions: Int = 5) -> SphereMesh {
+        let phi = Float((1.0 + sqrt(5.0)) * 0.5)
+        var positions: [SIMD3<Float>] = [
+            SIMD3(-1,  phi,  0), SIMD3( 1,  phi,  0),
+            SIMD3(-1, -phi,  0), SIMD3( 1, -phi,  0),
+            SIMD3( 0, -1,  phi), SIMD3( 0,  1,  phi),
+            SIMD3( 0, -1, -phi), SIMD3( 0,  1, -phi),
+            SIMD3( phi,  0, -1), SIMD3( phi,  0,  1),
+            SIMD3(-phi,  0, -1), SIMD3(-phi,  0,  1)
+        ].map(simd_normalize)
+
+        var faces: [(UInt32, UInt32, UInt32)] = [
+            (0, 11, 5), (0, 5, 1), (0, 1, 7), (0, 7, 10), (0, 10, 11),
+            (1, 5, 9), (5, 11, 4), (11, 10, 2), (10, 7, 6), (7, 1, 8),
+            (3, 9, 4), (3, 4, 2), (3, 2, 6), (3, 6, 8), (3, 8, 9),
+            (4, 9, 5), (2, 4, 11), (6, 2, 10), (8, 6, 7), (9, 8, 1)
+        ]
+
+        for _ in 0..<max(0, subdivisions) {
+            var midpointCache: [UInt64: UInt32] = [:]
+
+            func midpoint(_ lhs: UInt32, _ rhs: UInt32) -> UInt32 {
+                let low = min(lhs, rhs)
+                let high = max(lhs, rhs)
+                let key = (UInt64(low) << 32) | UInt64(high)
+                if let existing = midpointCache[key] { return existing }
+
+                let point = simd_normalize(
+                    positions[Int(lhs)] + positions[Int(rhs)])
+                let index = UInt32(positions.count)
+                positions.append(point)
+                midpointCache[key] = index
+                return index
+            }
+
+            var refined: [(UInt32, UInt32, UInt32)] = []
+            refined.reserveCapacity(faces.count * 4)
+            for (a, b, c) in faces {
+                let ab = midpoint(a, b)
+                let bc = midpoint(b, c)
+                let ca = midpoint(c, a)
+                refined.append(contentsOf: [
+                    (a, ab, ca),
+                    (b, bc, ab),
+                    (c, ca, bc),
+                    (ab, bc, ca)
+                ])
+            }
+            faces = refined
+        }
+
+        let vertices = positions.map { SIMD4<Float>($0, 0) }
+        let indices = faces.flatMap { [$0.0, $0.1, $0.2] }
+        let vertexBuffer = device.makeBuffer(
+            bytes: vertices,
+            length: vertices.count * MemoryLayout<SIMD4<Float>>.stride,
+            options: .storageModeShared)!
+        let indexBuffer = device.makeBuffer(
+            bytes: indices,
+            length: indices.count * MemoryLayout<UInt32>.stride,
+            options: .storageModeShared)!
+        return SphereMesh(
+            vertexBuffer: vertexBuffer,
+            indexBuffer: indexBuffer,
+            indexCount: indices.count)
+    }
 }

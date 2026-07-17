@@ -13,7 +13,6 @@ struct AsteroidGPU {
 
 struct MeshVertex {
     float3 position;
-    float  _pad;
 };
 
 struct CameraUniforms {

@@ -13,6 +13,8 @@ final class WallpaperWindowController: NSWindowController {
     private let mtkView:  WallpaperMTKView
     private weak var screenRef: NSScreen?
     private var mouseMonitor: Any?
+    private var gamifiedMode = false
+    private var demoPresentationMode = false
 
     static let desktopLevelKey:     Int = 2     // kCGDesktopWindowLevelKey
     static let desktopIconLevelKey: Int = 18    // kCGDesktopIconWindowLevelKey
@@ -77,10 +79,41 @@ final class WallpaperWindowController: NSWindowController {
 
     /// Flip the window level. Hides desktop icons by sitting above them.
     func setGamifiedMode(_ on: Bool) {
-        window?.level = Self.windowLevel(gamified: on)
+        gamifiedMode = on
+        refreshWindowLevel()
     }
 
-    private static func windowLevel(gamified: Bool) -> NSWindow.Level {
+    /// Demo Mode doubles as a capture-safe privacy curtain. It elevates only
+    /// this screen's universe above ordinary app windows; Mission Control is
+    /// placed one level higher by its own controller.
+    func setDemoPresentationMode(_ on: Bool) {
+        demoPresentationMode = on
+        refreshWindowLevel()
+    }
+
+    func setTargetFPS(_ fps: Int) {
+        mtkView.preferredFramesPerSecond = fps >= 60 ? 60 : 30
+    }
+
+    func setUniverseVisible(_ visible: Bool) {
+        if visible {
+            window?.orderFrontRegardless()
+        } else {
+            window?.orderOut(nil)
+        }
+    }
+
+    private func refreshWindowLevel() {
+        window?.level = Self.windowLevel(
+            gamified: gamifiedMode,
+            demoPresentation: demoPresentationMode)
+    }
+
+    private static func windowLevel(
+        gamified: Bool,
+        demoPresentation: Bool = false
+    ) -> NSWindow.Level {
+        if demoPresentation { return .screenSaver }
         let key = gamified ? desktopIconLevelKey : desktopLevelKey
         let raw = Int(CGWindowLevelForKey(CGWindowLevelKey(rawValue: Int32(key))!))
         return NSWindow.Level(rawValue: gamified ? raw + 1 : raw)

@@ -10,6 +10,7 @@ final class Universe {
     // Per-kind, typed for cheap GPU buffer uploads.
     private(set) var planets:   [PlanetBody]    = []
     private(set) var asteroids: [AsteroidBody]  = []
+    private(set) var agents:    [AgentBody]     = []
     private(set) var star:      StarBody?
     private(set) var blackHole: BlackHoleBody?
     // Stubs for future kinds — wired up in later phases:
@@ -138,6 +139,7 @@ final class Universe {
                 shellAngles[a.shell] = [angle]
             }
         }
+
     }
 
     /// Midpoint of the largest angular gap in a circular list of angles.
@@ -173,6 +175,186 @@ final class Universe {
         }
         let dt = min(deltaTime, 0.1)   // cap to avoid jumps after background sleep
         for i in planets.indices { planets[i].advanceOrbit(deltaTime: dt, starCenter: starCenter) }
+        for i in agents.indices {
+            // Docked ships follow their project as its planet continues orbiting.
+            if let projectURL = agents[i].actionURL,
+               let planet = planets.first(where: {
+                   $0.actionURL?.standardizedFileURL == projectURL.standardizedFileURL
+               }) {
+                agents[i].targetPosition = shipDock(
+                    for: planet,
+                    agentID: agents[i].stableId,
+                    locationFingerprint: agents[i].locationFingerprint,
+                    locationDepth: agents[i].locationDepth)
+            }
+            agents[i].advanceJourney(deltaTime: dt)
+        }
+    }
+
+    /// Reconcile privacy-safe Codex metadata with the fleet. Project association
+    /// is path-component based (never a raw string prefix), and unmatched work
+    /// remains honestly parked near the central star.
+    func updateAgents(from activities: [CodexAgentActivity]) {
+        let previous = Dictionary(uniqueKeysWithValues: agents.map { ($0.stableId, $0) })
+        let center = star?.position
+            ?? SIMD3(Float(screenSize.width) * 0.5, 0, Float(screenSize.height) * 0.5)
+
+        agents = activities.prefix(AgentRenderer.maxVisibleAgents).map { activity in
+            let activityHash = stableHash64(activity.id)
+            let hashAngle = Float(activityHash & 0xFFFF) / 65535 * 2 * .pi
+            let currentLocation = activity.locationURL ?? activity.workspaceURL
+            let project = currentLocation.flatMap { location in
+                planets
+                    .filter { planet in
+                        guard let projectURL = planet.actionURL else { return false }
+                        return Self.contains(location, inside: projectURL)
+                    }
+                    .max { lhs, rhs in
+                        (lhs.actionURL?.pathComponents.count ?? 0)
+                            < (rhs.actionURL?.pathComponents.count ?? 0)
+                    }
+            } ?? activity.workspaceURL.flatMap { workspace in
+                planets
+                    .filter { planet in
+                        guard let projectURL = planet.actionURL else { return false }
+                        return Self.contains(workspace, inside: projectURL)
+                    }
+                    .max { lhs, rhs in
+                        (lhs.actionURL?.pathComponents.count ?? 0)
+                            < (rhs.actionURL?.pathComponents.count ?? 0)
+                    }
+            }
+            let locationDepth: UInt32
+            if let projectURL = project?.actionURL?.standardizedFileURL,
+               let location = currentLocation?.standardizedFileURL,
+               Self.contains(location, inside: projectURL) {
+                locationDepth = UInt32(min(
+                    6,
+                    location.pathComponents.count - projectURL.pathComponents.count))
+            } else {
+                locationDepth = 0
+            }
+            let locationFingerprint = currentLocation.map {
+                stableHash64($0.standardizedFileURL.path)
+            } ?? 0
+            let target: SIMD3<Float>
+            if let location = currentLocation,
+               let asteroid = asteroids.first(where: {
+                   $0.actionURL?.standardizedFileURL == location.standardizedFileURL
+               }) {
+                target = asteroid.position + SIMD3(0, asteroid.radius + 22, 0)
+            } else if let project {
+                target = shipDock(
+                    for: project,
+                    agentID: activity.id,
+                    locationFingerprint: locationFingerprint,
+                    locationDepth: locationDepth)
+            } else {
+                let angle = hashAngle
+                let ring = Int((activityHash >> 20) % 3)
+                let radius: Float = 185 + Float(ring) * 42
+                target = center + SIMD3(cos(angle) * radius, 12, sin(angle) * radius)
+            }
+
+            let visualState = Self.visualState(for: activity)
+            let activityMode = Self.activityMode(for: activity.signal)
+            if var existing = previous[activity.id] {
+                let oldTarget = existing.targetPosition
+                let changedLocation = existing.locationFingerprint != locationFingerprint
+                existing.name = activity.displayName
+                existing.actionURL = project?.actionURL
+                existing.locationFingerprint = locationFingerprint
+                existing.locationDepth = locationDepth
+                if changedLocation || simd_distance_squared(oldTarget, target) > 90_000 {
+                    existing.retarget(to: target, state: visualState)
+                } else {
+                    existing.targetPosition = target
+                    existing.state = visualState
+                }
+                existing.setActivityMode(activityMode)
+                return existing
+            }
+
+            let isPrimary = activity.role == .primary
+            let launchRadius = (star?.radius ?? 82) + 28
+            let launchAngle = hashAngle + .pi * 0.72
+            let launchPoint = center + SIMD3(
+                cos(launchAngle) * launchRadius,
+                16,
+                sin(launchAngle) * launchRadius)
+            return AgentBody(
+                stableId: activity.id,
+                name: activity.displayName,
+                actionURL: project?.actionURL,
+                startPosition: launchPoint,
+                targetPosition: target,
+                progress: 0,
+                trailLength: isPrimary ? 0.42 : 0.32,
+                size: isPrimary ? 18 : 14,
+                intensity: isPrimary ? 1.15 : 0.95,
+                tint: isPrimary ? AgentBody.codexBlue : SIMD3(0.56, 0.42, 1.0),
+                state: visualState,
+                activityMode: activityMode,
+                locationFingerprint: locationFingerprint,
+                locationDepth: locationDepth)
+        }
+    }
+
+    private func shipDock(
+        for planet: PlanetBody,
+        agentID: String,
+        locationFingerprint: UInt64 = 0,
+        locationDepth: UInt32 = 0
+    ) -> SIMD3<Float> {
+        let agentHash = stableHash64(agentID)
+        let locationHash = locationFingerprint == 0 ? agentHash : locationFingerprint
+        var locationRNG = SeededRandom(
+            state: locationHash ^ (agentHash &* 0x9E37_79B9_7F4A_7C15))
+        let phase = locationRNG.float(in: 0...(2 * .pi))
+            + Float(agentHash & 0xFF) / 255 * 0.22
+        let depth = min(6, Int(locationDepth))
+        let distance = planet.radius + 38 + Float(depth) * 7
+        let height = 16 + Float(depth) * 5
+        return planet.position + SIMD3(
+            cos(phase) * distance,
+            height,
+            sin(phase) * distance)
+    }
+
+    private static func contains(_ candidate: URL, inside ancestor: URL) -> Bool {
+        let child = candidate.standardizedFileURL.pathComponents
+        let parent = ancestor.standardizedFileURL.pathComponents
+        guard child.count >= parent.count else { return false }
+        return Array(child.prefix(parent.count)) == parent
+    }
+
+    private static func visualState(for activity: CodexAgentActivity) -> AgentVisualState {
+        switch activity.lifecycle {
+        case .completed: return .succeeded
+        case .aborted:   return .failed
+        case .stale:     return .returning
+        case .active:
+            switch activity.signal {
+            case .starting:    return .launching
+            case .waiting:     return .waiting
+            case .finished:    return .succeeded
+            case .interrupted: return .failed
+            default:           return .working
+            }
+        }
+    }
+
+    private static func activityMode(for signal: CodexAgentSignal) -> AgentActivityMode {
+        switch signal {
+        case .starting:      return .starting
+        case .thinking:      return .thinking
+        case .usingTool:     return .usingTool
+        case .communicating: return .communicating
+        case .working:       return .working
+        case .waiting:       return .waiting
+        case .finished:      return .finished
+        case .interrupted:   return .interrupted
+        }
     }
 
     /// Update the central Internet Star — call when the default browser or
@@ -225,6 +407,7 @@ final class Universe {
     func body(atWorld point: SIMD3<Float>) -> (any CelestialBody)? {
         let p2 = SIMD2(point.x, point.z)
         // Planets first so they win when overlapping the star at center.
+        if let hit = nearestHit(in: agents, point: p2) { return hit }
         if let hit = nearestHit(in: planets, point: p2) { return hit }
         if let hit = nearestHit(in: asteroids, point: p2) { return hit }
         if let s = star {

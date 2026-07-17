@@ -42,9 +42,10 @@ final class StarRenderer {
     init(device: MTLDevice, library: MTLLibrary, mesh: SphereMesh,
          sampleCount: Int, depthFormat: MTLPixelFormat) throws {
         self.device = device
-        // The star gets its own denser sphere so the displaced surface reads as
-        // a true 3D body rather than borrowing the coarser planet tessellation.
-        self.mesh   = SphereMesh.make(device: device, latSegments: 80, lonSegments: 120)
+        // The star gets an evenly tessellated sphere with no UV poles. This
+        // prevents procedural displacement from opening a pinched cap into a
+        // dark spot while retaining roughly the old triangle count.
+        self.mesh = SphereMesh.makeIcosphere(device: device, subdivisions: 5)
 
         // Surface — opaque, depth read+write
         let s = MTLRenderPipelineDescriptor()
@@ -124,8 +125,11 @@ final class StarRenderer {
         // ---- Surface (opaque sphere) ----
         encoder.setRenderPipelineState(surfacePipeline)
         encoder.setDepthStencilState(surfaceDepth)
+        // Icosphere faces use canonical outward winding, opposite the legacy
+        // UV mesh under this viewport transform. Cull the hidden hemisphere so
+        // the pole fix does not add unnecessary procedural fragment work.
         encoder.setCullMode(.back)
-        encoder.setFrontFacing(.counterClockwise)
+        encoder.setFrontFacing(.clockwise)
 
         encoder.setVertexBuffer(mesh.vertexBuffer, offset: 0, index: 0)
         encoder.setVertexBytes(&star,   length: MemoryLayout<StarGPU>.size,        index: 1)

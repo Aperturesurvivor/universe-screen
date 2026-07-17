@@ -7,6 +7,7 @@ import simd
 enum BodyKind: String, Codable, CaseIterable {
     case planet
     case asteroid
+    case agent
     case star          // stub for Phase 5 (default browser)
     case blackHole     // stub for Phase 6 (Trash)
     case warpGate      // stub for Phase 6 (Mail)
@@ -27,4 +28,8 @@ protocol CelestialBody {
     var position:  SIMD3<Float> { get }
     /// World-space radius for hit-testing & label anchoring.
     var radius:    Float        { get }
+}
+
+extension AgentBody: CelestialBody {
+    var kind: BodyKind { .agent }
 }

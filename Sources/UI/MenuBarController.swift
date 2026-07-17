@@ -6,6 +6,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
 
     private let statusItem: NSStatusItem
     private let popover    = NSPopover()
+    private let onOpenDashboard: (() -> Void)?
     let panelVC:   ControlPanelViewController
 
     /// Fired right before the popover starts showing. Use this to pause
@@ -15,12 +16,14 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
     var onPanelDidClose: (() -> Void)?
 
     init(config: SimulationConfig,
+         onOpenDashboard: (() -> Void)? = nil,
          onQuit: @escaping () -> Void,
          onResetAndRetry: @escaping () -> Void,
          onGamifiedToggle: @escaping (Bool) -> Void,
          onStarChange: @escaping () -> Void,
          onSeedChange: @escaping (UInt64) -> Void) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        self.onOpenDashboard = onOpenDashboard
         panelVC    = ControlPanelViewController(
             config: config,
             onQuit: onQuit,
@@ -44,7 +47,9 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
     }
 
     @objc private func togglePanel() {
-        if popover.isShown {
+        if let onOpenDashboard {
+            onOpenDashboard()
+        } else if popover.isShown {
             popover.performClose(nil)
         } else if let btn = statusItem.button {
             popover.show(relativeTo: btn.bounds, of: btn, preferredEdge: .minY)

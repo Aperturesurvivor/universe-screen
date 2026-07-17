@@ -32,7 +32,6 @@ struct StarGPU {
 
 struct MeshVertex {
     float3 position;
-    float  _pad;
 };
 
 struct CameraUniforms {
@@ -84,8 +83,8 @@ static inline float3 rotateZ(float3 p, float angle) {
 }
 
 static inline float3 orientedStarUnit(float3 unit, float seed) {
-    // A fixed tilt keeps the UV-sphere pole from sitting exactly at screen
-    // center, which avoids visible concentric pinching in the hottest region.
+    // A fixed tilt keeps the procedural flow from aligning to screen axes and
+    // gives each saved universe a subtly different stellar orientation.
     float tiltX = 0.72 + fract(seed * 0.013) * 0.30;
     float tiltZ = -0.58 + fract(seed * 0.021) * 0.24;
     return normalize(rotateZ(rotateX(unit, tiltX), tiltZ));

@@ -20,27 +20,67 @@ targets:
       - path: Resources
         type: folder
         buildPhase: resources
+        excludes:
+          - Info.plist
+          - GravityWallpaper.entitlements
 
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.universe-screen.gravity-wallpaper
+        PRODUCT_NAME: Universe Screen
+        PRODUCT_BUNDLE_IDENTIFIER: com.josiah.universe-screen.sol
         INFOPLIST_KEY_LSUIElement: YES               # hide from Dock
         INFOPLIST_KEY_NSPrincipalClass: NSApplication
-        INFOPLIST_KEY_CFBundleName: GravityWallpaper
-        METAL_ENABLE_DEBUG_INFO: INCLUDE_SOURCE      # remove for release
+        INFOPLIST_KEY_CFBundleName: Universe Screen
+        INFOPLIST_KEY_CFBundleDisplayName: Universe Screen
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_ENTITLEMENTS: Resources/GravityWallpaper.entitlements
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "26.0"
+      configs:
+        Debug:
+          METAL_ENABLE_DEBUG_INFO: INCLUDE_SOURCE
+        Release:
+          METAL_ENABLE_DEBUG_INFO: NO
 
     info:
       path: Resources/Info.plist
       properties:
         LSUIElement: true
         NSPrincipalClass: NSApplication
-        CFBundleName: GravityWallpaper
-        CFBundleIdentifier: com.universe-screen.gravity-wallpaper
-        CFBundleVersion: "1"
-        CFBundleShortVersionString: "1.0"
+        CFBundleName: Universe Screen
+        CFBundleDisplayName: Universe Screen
+        CFBundleIdentifier: com.josiah.universe-screen.sol
+        CFBundleVersion: "2"
+        CFBundleShortVersionString: "2.0"
         NSHighResolutionCapable: true
-        NSAppleEventsUsageDescription: "Universe Screen reads desktop folder positions from Finder so planets line up with where your folders sit on the desktop."
+        NSAppleEventsUsageDescription: "Universe Screen can read Finder icon positions when your selected source is the Desktop."
+
+  UniverseScreenTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Tests
+    dependencies:
+      - target: GravityWallpaper
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.josiah.universe-screen.sol.tests
+        SWIFT_VERSION: "6.0"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Universe Screen.app/Contents/MacOS/Universe Screen"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+schemes:
+  GravityWallpaper:
+    build:
+      targets:
+        GravityWallpaper: all
+        UniverseScreenTests:
+          - test
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - name: UniverseScreenTests

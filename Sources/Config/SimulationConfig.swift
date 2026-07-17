@@ -1,20 +1,65 @@
-// Shared mutable config — all layers read this each frame so sliders take effect immediately.
+// Shared observable configuration for the renderer, menu popover, and mission control.
+// Settings that define the workspace experience persist between launches; live status does not.
+import Combine
 import Foundation
 
-final class SimulationConfig {
+@MainActor
+final class SimulationConfig: ObservableObject {
 
-    // MARK: - Motion (purely kinematic)
-    var motionAmount: Float = 1.0
+    private enum Key {
+        static let sourcePath = "universe.sourcePath"
+        static let maxWorlds = "universe.maxWorlds"
+        static let showCodexAgents = "universe.showCodexAgents"
+        static let privacyMode = "universe.privacyMode"
+        static let targetFPS = "universe.targetFPS"
+        static let motionAmount = "universe.motionAmount"
+        static let gamifiedMode = "universe.gamifiedMode"
+    }
 
-    // MARK: - Star appearance (driven by NetworkMonitor; can be overridden by sliders)
-    var starTemperature:  Float = 0.08   // 0 warm/orange ↔ 1 cool/blue
-    var starIntensity:    Float = 0.85   // 0 dim ↔ 1 bright
-    var starStability:    Float = 0.14   // 0 chaotic/turbulent ↔ 1 calm
-    var starCoronaScale:  Float = 1.0    // 0.3 small halo ↔ 2.0 huge halo
-    var starFlareDensity: Float = 0.30   // 0 no flares ↔ 1 many flares
+    private let defaults: UserDefaults
 
-    /// Called by NetworkMonitor on each path update. Updates star fields in-place
-    /// so sliders always reflect the live values.
+    // MARK: - Workspace
+
+    @Published var sourceURL: URL {
+        didSet { defaults.set(sourceURL.path, forKey: Key.sourcePath) }
+    }
+
+    @Published var maxWorlds: Int {
+        didSet {
+            defaults.set(maxWorlds, forKey: Key.maxWorlds)
+        }
+    }
+
+    @Published var showCodexAgents: Bool {
+        didSet { defaults.set(showCodexAgents, forKey: Key.showCodexAgents) }
+    }
+
+    /// Hides full paths and any user-authored Codex text from the UI. Telemetry is
+    /// metadata-only regardless of this setting; privacy mode controls presentation.
+    @Published var privacyMode: Bool {
+        didSet { defaults.set(privacyMode, forKey: Key.privacyMode) }
+    }
+
+    // MARK: - Motion and rendering
+
+    @Published var motionAmount: Float {
+        didSet { defaults.set(Double(motionAmount), forKey: Key.motionAmount) }
+    }
+
+    @Published var targetFPS: Int {
+        didSet {
+            defaults.set(targetFPS, forKey: Key.targetFPS)
+        }
+    }
+
+    // MARK: - Star appearance (driven by NetworkMonitor; sliders can override)
+
+    @Published var starTemperature:  Float = 0.08
+    @Published var starIntensity:    Float = 0.85
+    @Published var starStability:    Float = 0.14
+    @Published var starCoronaScale:  Float = 1.0
+    @Published var starFlareDensity: Float = 0.30
+
     func applyNetworkScores(temperature: Float, intensity: Float, stability: Float,
                             coronaScale: Float, flareDensity: Float) {
         starTemperature  = temperature
@@ -24,11 +69,63 @@ final class SimulationConfig {
         starFlareDensity = flareDensity
     }
 
-    // MARK: - Gamified mode (window above icons vs below)
-    var gamifiedMode: Bool = false
+    // MARK: - Window state
 
-    // MARK: - Status (read-only mirror, set by AppDelegate)
-    var planetCount: Int = 0
-    var asteroidCount: Int = 0
-    var positionSource: String = "auto"
+    @Published var gamifiedMode: Bool {
+        didSet { defaults.set(gamifiedMode, forKey: Key.gamifiedMode) }
+    }
+    @Published var universeVisible = true
+
+    // MARK: - Live status (set by AppDelegate)
+
+    @Published var planetCount = 0
+    @Published var asteroidCount = 0
+    @Published var activeAgentCount = 0
+    @Published var positionSource = "auto"
+    @Published var filesystemLive = false
+    @Published var codexLive = false
+    @Published var measuredFPS: Double = 0
+    @Published var projectNames: [String] = []
+    @Published var agentSummaries: [String] = []
+
+    var displaySourcePath: String {
+        privacyMode ? sourceURL.lastPathComponent : sourceURL.path
+    }
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+
+        let fallback = Self.defaultSourceURL()
+        if let path = defaults.string(forKey: Key.sourcePath),
+           FileManager.default.fileExists(atPath: path) {
+            sourceURL = URL(fileURLWithPath: path, isDirectory: true)
+        } else {
+            sourceURL = fallback
+        }
+
+        let storedMax = defaults.integer(forKey: Key.maxWorlds)
+        maxWorlds = storedMax == 0 ? 24 : min(48, max(4, storedMax))
+        showCodexAgents = defaults.object(forKey: Key.showCodexAgents) == nil
+            ? true : defaults.bool(forKey: Key.showCodexAgents)
+        privacyMode = defaults.object(forKey: Key.privacyMode) == nil
+            ? true : defaults.bool(forKey: Key.privacyMode)
+        let storedFPS = defaults.integer(forKey: Key.targetFPS)
+        targetFPS = storedFPS >= 60 ? 60 : 30
+        let storedMotion = defaults.object(forKey: Key.motionAmount) as? Double
+        motionAmount = Float(storedMotion ?? 1.0)
+        gamifiedMode = defaults.bool(forKey: Key.gamifiedMode)
+    }
+
+    private static func defaultSourceURL() -> URL {
+        let home = FileManager.default.homeDirectoryForCurrentUser
+        let projectWorkspace = home
+            .appendingPathComponent("Josiah", isDirectory: true)
+            .appendingPathComponent("Project-Workspace", isDirectory: true)
+        var isDirectory: ObjCBool = false
+        if FileManager.default.fileExists(atPath: projectWorkspace.path, isDirectory: &isDirectory),
+           isDirectory.boolValue {
+            return projectWorkspace
+        }
+        return FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first ?? home
+    }
 }

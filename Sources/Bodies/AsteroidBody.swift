@@ -32,8 +32,9 @@ struct AsteroidGPU {
 extension AsteroidBody {
     static func make(from file: FileInfo, screenSize: CGSize, seed: Seed) -> AsteroidBody {
         var rng = seed.rng(forBodyId: file.url.absoluteString)
-        let position = Self.placement(for: file, screenSize: screenSize, rng: &rng)
         let radius   = Self.visualRadius(for: file.sizeBytes)
+        let position = Self.placement(
+            for: file, screenSize: screenSize, radius: radius, rng: &rng)
         return AsteroidBody(
             stableId:  file.url.absoluteString,
             name:      file.url.lastPathComponent,
@@ -45,16 +46,43 @@ extension AsteroidBody {
         )
     }
 
-    private static func placement(for file: FileInfo, screenSize: CGSize,
-                                   rng: inout SeededRandom) -> SIMD3<Float> {
+    private static func placement(for file: FileInfo,
+                                  screenSize: CGSize,
+                                  radius: Float,
+                                  rng: inout SeededRandom) -> SIMD3<Float> {
         if let icon = file.iconPosition,
            screenSize.width > 1, screenSize.height > 1 {
             return SIMD3(Float(icon.x), 0, Float(icon.y))
         }
-        // Fallback: scattered dots inside the screen
-        return SIMD3(rng.float(in: 0...Float(screenSize.width)),
-                     0,
-                     rng.float(in: 0...Float(screenSize.height)))
+
+        // Fallback sources have no Finder position to preserve. Scatter their
+        // file bodies across the screen, but reserve the star's central disk so
+        // a rock can never masquerade as a sunspot.
+        let point = SIMD2(
+            rng.float(in: 0...Float(screenSize.width)),
+            rng.float(in: 0...Float(screenSize.height)))
+        let center = SIMD2(
+            Float(screenSize.width) * 0.5,
+            Float(screenSize.height) * 0.5)
+        let starRadius = max(78, Float(min(screenSize.width, screenSize.height)) * 0.075)
+        let safeDistance = starRadius + radius + 12
+        let delta = point - center
+        let distance = simd_length(delta)
+
+        guard distance < safeDistance else {
+            return SIMD3(point.x, 0, point.y)
+        }
+
+        let direction: SIMD2<Float>
+        if distance > 0.001 {
+            direction = delta / distance
+        } else {
+            let hash = stableHash64(file.url.absoluteString)
+            let angle = Float(hash & 0xFFFF) / 65535 * 2 * .pi
+            direction = SIMD2(cos(angle), sin(angle))
+        }
+        let safePoint = center + direction * safeDistance
+        return SIMD3(safePoint.x, 0, safePoint.y)
     }
 
     private static func visualRadius(for bytes: Int64) -> Float {
