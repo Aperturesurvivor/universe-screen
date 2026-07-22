@@ -75,8 +75,12 @@ and visible-world limits.
 - [42-second demo plan](DEMO.md)
 
 This is a working local prototype, not a shipped product. It has not completed
-distribution signing, a full accessibility audit, external user validation, or
-a source-publication/license review.
+distribution signing, a full accessibility audit, or external user validation.
+The source is published for inspection, but no open-source license has been
+selected; reuse rights are therefore not granted by default.
+
+The long-form public record is available at
+[josiahwilson.me/projects/universe-screen](https://josiahwilson.me/projects/universe-screen/).
 
 ## Demo principle
 
