@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "id": "launch-loop-sol-demo-v1",
+  "title": "Agent Universe Launch Loop",
+  "seed": 6840227782638526189,
+  "referenceTimestamp": "2026-01-15T20:00:00Z",
+  "provenance": {
+    "classification": "synthetic-public-safe",
+    "source": "Original synthetic Universe Screen demo labels",
+    "rights": "Project owned demo configuration",
+    "humanReviewRequiredBeforeCommercialExport": true
+  },
+  "worlds": [
+    {
+      "id": "atlas",
+      "label": "Atlas Foundry",
+      "sizeBytes": 860000000,
+      "biome": "ocean"
+    },
+    {
+      "id": "lumen",
+      "label": "Lumen Archive",
+      "sizeBytes": 420000000,
+      "biome": "golden"
+    },
+    {
+      "id": "signal",
+      "label": "Signal Garden",
+      "sizeBytes": 240000000,
+      "biome": "lush"
+    },
+    {
+      "id": "vector",
+      "label": "Vector Harbor",
+      "sizeBytes": 610000000,
+      "biome": "crimson"
+    }
+  ],
+  "files": [
+    {
+      "id": "brief",
+      "label": "Launch Brief.md",
+      "sizeBytes": 84000
+    },
+    {
+      "id": "map",
+      "label": "Orbit Map.pdf",
+      "sizeBytes": 2800000
+    },
+    {
+      "id": "notes",
+      "label": "Field Notes.txt",
+      "sizeBytes": 16000
+    }
+  ],
+  "agents": [
+    {
+      "id": "navigator",
+      "label": "Navigator",
+      "role": "primary",
+      "signal": "working",
+      "worldID": "atlas"
+    },
+    {
+      "id": "relay",
+      "label": "Relay",
+      "role": "subagent",
+      "signal": "communicating",
+      "worldID": "signal"
+    },
+    {
+      "id": "surveyor",
+      "label": "Surveyor",
+      "role": "subagent",
+      "signal": "usingTool",
+      "worldID": "vector"
+    }
+  ]
+}

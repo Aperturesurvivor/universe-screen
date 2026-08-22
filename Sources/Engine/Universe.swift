@@ -30,9 +30,9 @@ final class Universe {
         self.seed = seed
     }
 
-    func setSeed(_ newSeed: Seed) {
+    func setSeed(_ newSeed: Seed, persist: Bool = true) {
         self.seed = newSeed
-        newSeed.save()
+        if persist { newSeed.save() }
         // Bodies derive visual properties from the seed, so the caller should
         // re-run a refresh after this to actually see the change.
     }

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "commercial-loop-1080p-15s-v1",
+  "durationSeconds": 15,
+  "width": 1920,
+  "height": 1080,
+  "framesPerSecond": 30,
+  "container": "mp4",
+  "codec": "h264",
+  "audio": "none",
+  "contentClassification": "synthetic-public-safe"
+}

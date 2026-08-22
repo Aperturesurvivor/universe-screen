@@ -48,6 +48,7 @@
 		D1030B1B983998453A78E259 /* SharedUniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348ED0174C161D42FA6C8C2 /* SharedUniforms.swift */; };
 		D5601EA5562321820AEB441F /* UniverseRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DE242B459A5E7C13E470F6 /* UniverseRenderer.swift */; };
 		D8B060AE2AD381E4ADBB5263 /* CelestialBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F28D5FBAE2EF4B3DCB69BB /* CelestialBody.swift */; };
+		E09764A19EBA7BE733C5EA63 /* DemoManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFA4035B0667643654CEB4A /* DemoManifest.swift */; };
 		E11A09CD8A31566787516EAA /* AsteroidBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE9BE64B52BB144B16C09F5 /* AsteroidBody.swift */; };
 		E2A263AFB3F108345CCD8DC8 /* LabelAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA5C87050BD7CC05C9480D2 /* LabelAtlas.swift */; };
 		ED56D32456072FFD52E86953 /* StarfieldRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDA39D9F4FB1B9A099B5324 /* StarfieldRenderer.swift */; };
@@ -97,6 +98,7 @@
 		8348ED0174C161D42FA6C8C2 /* SharedUniforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedUniforms.swift; sourceTree = "<group>"; };
 		892F593D72F3E8CE0C7A5162 /* CodexActivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexActivityMonitor.swift; sourceTree = "<group>"; };
 		9060543C5E25A3AC07D50346 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		9BFA4035B0667643654CEB4A /* DemoManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoManifest.swift; sourceTree = "<group>"; };
 		9CA5C87050BD7CC05C9480D2 /* LabelAtlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelAtlas.swift; sourceTree = "<group>"; };
 		A1C2CBD5D108D891970506FE /* Universe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Universe.swift; sourceTree = "<group>"; };
 		B1E8D99B959EA9F72AC6C510 /* SimulationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationConfig.swift; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 		96DB7482FA64755E0CB2F9E2 /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				9BFA4035B0667643654CEB4A /* DemoManifest.swift */,
 				B1E8D99B959EA9F72AC6C510 /* SimulationConfig.swift */,
 			);
 			path = Config;
@@ -369,6 +372,7 @@
 				ADB06B1A696C76879A3E059A /* DashboardView.swift in Sources */,
 				C497B4268AA9C8F81E423BF8 /* DashboardWindowController.swift in Sources */,
 				F6B995CEF7866C3CA4CD60B9 /* DefaultBrowser.swift in Sources */,
+				E09764A19EBA7BE733C5EA63 /* DemoManifest.swift in Sources */,
 				67AD1939DA6E8A1D716A46F2 /* DesktopFiles.swift in Sources */,
 				75CE2AAEAA75268D659A61DE /* DesktopFolders.swift in Sources */,
 				34AEFCFA9AC879F52A40E14E /* FolderPositions.swift in Sources */,

@@ -40,7 +40,7 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
     var camera   = Camera()
 
     private var drawableSize: SIMD2<Float> = .zero
-    private let startTime = CACurrentMediaTime()
+    private var startTime = CACurrentMediaTime()
     private var lastFrameTime    = CACurrentMediaTime()
     private var lastLabelUploadTime = CACurrentMediaTime()
     private var fpsWindowStart = CACurrentMediaTime()
@@ -155,6 +155,17 @@ final class UniverseRenderer: NSObject, MTKViewDelegate {
         guard focus == nil else { return }
         agentRenderer.update(agents: config.showCodexAgents ? universe.agents : [])
         rebuildOrbitalLabels()
+    }
+
+    /// Start a manifest demo from the same animation epoch on every activation.
+    /// Frame delivery remains real-time, but no prior live-session time leaks into
+    /// the first captured frame's shader or movement phase.
+    func resetAnimationClock() {
+        let now = CACurrentMediaTime()
+        startTime = now
+        lastFrameTime = now
+        fpsWindowStart = now
+        fpsFrameCount = 0
     }
 
     private func rebuildOrbitalLabels() {

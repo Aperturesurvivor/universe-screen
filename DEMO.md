@@ -1,5 +1,27 @@
 # 42-second demo
 
+This live-product walkthrough is not the commercial Launch Loop. It uses real
+local integrations and must not be substituted for the synthetic deliverable
+described below.
+
+## 15-second Agent Universe Launch Loop
+
+Use Demo Mode only. It loads `Resources/Demo/sample-manifest.json`; do not add
+filesystem labels, Codex rollouts, prompts, or customer content.
+
+1. **0:00–0:03 — Hook.** Establish Sol and the four labeled synthetic worlds.
+2. **0:03–0:10 — Fleet.** Let Navigator, Relay, and Surveyor visibly travel or
+   work around their assigned worlds in one continuous shot.
+3. **0:10–0:13 — Evidence.** Briefly include Mission Control showing
+   `Synthetic manifest` and `Synthetic agents`.
+4. **0:13–0:15 — End frame.** Hold the full universe with the product name.
+
+Delivery must match `Resources/Demo/export-1080p-15s.json`: 1920x1080, 30 fps,
+450 frames, silent H.264 in an MP4 container. See
+`COMMERCIAL_OUTPUT.md` for exclusions and the final human review gate.
+
+## Live-product walkthrough
+
 ## Shot list
 
 1. **0:00–0:04 — Hook.** Open Mission Control over the live universe. “Your projects are worlds.”

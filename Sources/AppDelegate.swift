@@ -17,6 +17,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let codexMonitor = CodexActivityMonitor()
     private var codexObservation: AnyCancellable?
     private var fpsObservation: AnyCancellable?
+    private var manifestDemoActive = false
+    private var demoRestoreState: DemoRestoreState?
 
     private let config        = SimulationConfig()
     private var universe:     Universe?
@@ -104,6 +106,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             network = NetworkMonitor()
             network?.start { [weak self] in
                 guard let self else { return }
+                guard !self.manifestDemoActive else { return }
                 if let net = self.network {
                     self.config.applyNetworkScores(
                         temperature:  net.temperatureScore,
@@ -131,6 +134,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func pollPositions() {
+        guard !manifestDemoActive else { return }
         guard isDesktopSource else { return }
         if desktopWorkPaused || positionPollInFlight { return }
         positionPollInFlight = true
@@ -155,6 +159,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// user is still scrubbing, and debounces the heavier full-body rebuild
     /// (planets/asteroids re-rolling biomes) until the user pauses.
     private func applySeed(_ value: UInt64) {
+        guard !manifestDemoActive else { return }
         guard let universe = universe else { return }
         let newSeed = Seed(value: value)
         universe.setSeed(newSeed)
@@ -188,6 +193,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     ///  • Deep scan (real sizes) → second update once sizes resolve
     /// Both phases run on a background queue; main is only touched to apply results.
     private func refreshFromSource() {
+        guard !manifestDemoActive else { return }
         desktopScanGeneration += 1
         let generation = desktopScanGeneration
         let screenSize = NSScreen.main?.frame.size ?? CGSize(width: 1920, height: 1080)
@@ -295,6 +301,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// flows through this method so the watcher and in-flight scan generation change
     /// atomically from the user's point of view.
     func setSourceURL(_ url: URL) {
+        guard !manifestDemoActive else { return }
         var isDirectory: ObjCBool = false
         guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
               isDirectory.boolValue else { return }
@@ -310,6 +317,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func applyCodex(_ snapshot: CodexActivitySnapshot) {
+        guard !manifestDemoActive else { return }
         guard let universe, let renderer else { return }
         universe.updateAgents(from: snapshot.agents)
         renderer.refreshAgents()
@@ -403,18 +411,161 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func applyDemoMode(_ enabled: Bool) {
-        // Demo Mode is presentation-oriented, not synthetic: it hides full paths,
-        // applies a cinematic treatment, and creates a capture-safe curtain on the
-        // main display while retaining real filesystem and Codex telemetry streams.
         if enabled {
-            config.privacyMode = true
-            dashboard?.model.setPrivacyMode(true, notify: false)
-            dashboard?.model.setAppearance(.cinematic, notify: true)
+            enableManifestDemo()
+        } else {
+            disableManifestDemo()
         }
+    }
+
+    private func enableManifestDemo() {
+        guard !manifestDemoActive else { return }
+        guard let universe, let renderer else { return }
+        guard let manifestURL = DemoManifest.bundledSampleURL() else {
+            dashboard?.model.setDemoMode(false, notify: false)
+            return showDemoError("The bundled synthetic demo manifest is missing.")
+        }
+
+        let scene: DemoScene
+        do {
+            let manifest = try DemoManifest.decode(contentsOf: manifestURL)
+            scene = try manifest.makeScene(screenSize: CGSize(width: 1_920, height: 1_080))
+        } catch {
+            dashboard?.model.setDemoMode(false, notify: false)
+            return showDemoError(error.localizedDescription)
+        }
+
+        demoRestoreState = DemoRestoreState(
+            seed: universe.seed,
+            privacyMode: config.privacyMode,
+            showAgents: config.showCodexAgents,
+            targetFPS: config.targetFPS,
+            appearance: dashboard?.model.appearance ?? .natural,
+            starTemperature: config.starTemperature,
+            starIntensity: config.starIntensity,
+            starStability: config.starStability,
+            starCoronaScale: config.starCoronaScale,
+            starFlareDensity: config.starFlareDensity)
+        manifestDemoActive = true
+        desktopScanGeneration += 1
+        deferredSnap = nil
+        watcher?.stop()
+        sourceWatcherLive = false
+        codexMonitor.stop(clearSnapshot: false)
+
+        config.privacyMode = true
+        config.showCodexAgents = true
+        config.targetFPS = 30
+        config.starTemperature = 0.08
+        config.starIntensity = 1.0
+        config.starStability = 0.14
+        config.starCoronaScale = 1.42
+        config.starFlareDensity = 0.42
+        universe.setSeed(scene.seed, persist: false)
+        universe.update(
+            folders: scene.folders,
+            files: scene.files,
+            screenSize: scene.screenSize)
+        updateSyntheticStar(in: universe, screenSize: scene.screenSize)
+        universe.updateAgents(from: scene.agents)
+        renderer.resetAnimationClock()
+        renderer.refreshFromUniverse()
+
+        config.planetCount = scene.folders.count
+        config.asteroidCount = scene.files.count
+        config.activeAgentCount = scene.agents.count
+        config.filesystemLive = false
+        config.codexLive = false
+        config.positionSource = "manifest"
+        config.projectNames = scene.folders.map(\.name)
+        config.agentSummaries = scene.agents.map(\.displayName)
+
+        dashboard?.model.setRootURL(scene.rootURL)
+        dashboard?.model.setPrivacyMode(true, notify: false)
+        dashboard?.model.setShowAgents(true, notify: false)
+        dashboard?.model.setAppearance(.cinematic, notify: false)
+        dashboard?.model.setPerformanceMode(.adaptive, notify: false)
+        dashboard?.model.updateConnections(
+            filesystem: .disconnected,
+            filesystemDetail: "Synthetic manifest · no filesystem read",
+            codex: .disconnected,
+            codexDetail: "Synthetic agents · no Codex sessions read")
+        dashboard?.model.updateMetrics(
+            folders: scene.folders.count,
+            files: scene.files.count,
+            activeAgents: scene.agents.count)
+        dashboard?.model.setAgentNames(scene.agents.map(\.displayName))
+        menuBar?.panelVC.setInitialSeed(scene.seed)
+        menuBar?.panelVC.refreshLabels()
         for controller in wallpaperControllers {
-            controller.setDemoPresentationMode(enabled)
+            controller.setTargetFPS(30)
+            controller.setDemoPresentationMode(true)
         }
-        dashboard?.setDemoPresentationMode(enabled)
+        dashboard?.setDemoPresentationMode(true)
+    }
+
+    private func disableManifestDemo() {
+        guard manifestDemoActive else { return }
+        guard let universe, let restore = demoRestoreState else { return }
+
+        manifestDemoActive = false
+        demoRestoreState = nil
+        universe.setSeed(restore.seed, persist: false)
+        config.privacyMode = restore.privacyMode
+        config.showCodexAgents = restore.showAgents
+        config.targetFPS = restore.targetFPS
+        config.starTemperature = restore.starTemperature
+        config.starIntensity = restore.starIntensity
+        config.starStability = restore.starStability
+        config.starCoronaScale = restore.starCoronaScale
+        config.starFlareDensity = restore.starFlareDensity
+
+        dashboard?.model.setRootURL(config.sourceURL)
+        dashboard?.model.setPrivacyMode(restore.privacyMode, notify: false)
+        dashboard?.model.setShowAgents(restore.showAgents, notify: false)
+        dashboard?.model.setAppearance(restore.appearance, notify: false)
+        dashboard?.model.setPerformanceMode(
+            restore.targetFPS >= 60 ? .fidelity : .adaptive,
+            notify: false)
+        dashboard?.model.setFilesystemState(.connecting, detail: "Indexing project worlds…")
+        dashboard?.model.setCodexState(.connecting, detail: "Reading local activity metadata…")
+        menuBar?.panelVC.setInitialSeed(restore.seed)
+        for controller in wallpaperControllers {
+            controller.setTargetFPS(restore.targetFPS)
+            controller.setDemoPresentationMode(false)
+        }
+        dashboard?.setDemoPresentationMode(false)
+
+        refreshStar()
+        restartSourceWatcher()
+        refreshFromSource()
+        codexMonitor.start()
+        applyCodex(codexMonitor.snapshot)
+        menuBar?.panelVC.refreshLabels()
+    }
+
+    private func updateSyntheticStar(in universe: Universe, screenSize: CGSize) {
+        let browser = BrowserInfo(
+            bundleId: "synthetic.universe-screen.sol",
+            name: "Sol",
+            url: nil,
+            theme: DefaultBrowser.theme(for: "synthetic.universe-screen.sol"))
+        universe.updateStar(
+            browser: browser,
+            isOnline: true,
+            temperature: config.starTemperature,
+            intensity: config.starIntensity,
+            stability: config.starStability,
+            coronaScale: config.starCoronaScale,
+            flareDensity: config.starFlareDensity,
+            screenSize: screenSize)
+    }
+
+    private func showDemoError(_ message: String) {
+        let alert = NSAlert()
+        alert.messageText = "Demo Mode unavailable"
+        alert.informativeText = message
+        alert.runModal()
     }
 
     private func applyAppearance(_ preset: DashboardAppearancePreset) {
@@ -452,6 +603,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func refreshStar() {
         guard let universe = universe, let renderer = renderer else { return }
+        if manifestDemoActive {
+            updateSyntheticStar(
+                in: universe,
+                screenSize: CGSize(width: 1_920, height: 1_080))
+            renderer.refreshStar()
+            return
+        }
         let screenSize = NSScreen.main?.frame.size ?? CGSize(width: 1920, height: 1080)
         let browser    = DefaultBrowser.current()
         let online     = network?.isOnline ?? true
@@ -482,4 +640,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         watcher?.stop()
         positionTimer?.invalidate()
     }
+}
+
+private struct DemoRestoreState {
+    let seed: Seed
+    let privacyMode: Bool
+    let showAgents: Bool
+    let targetFPS: Int
+    let appearance: DashboardAppearancePreset
+    let starTemperature: Float
+    let starIntensity: Float
+    let starStability: Float
+    let starCoronaScale: Float
+    let starFlareDensity: Float
 }

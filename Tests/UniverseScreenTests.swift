@@ -166,3 +166,67 @@ final class DashboardModelTests: XCTestCase {
         XCTAssertEqual(high.worldLimit, 48)
     }
 }
+
+final class DemoManifestTests: XCTestCase {
+    private var demoDirectory: URL {
+        URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("Resources/Demo", isDirectory: true)
+    }
+
+    func testCheckedInManifestIsPublicSafeAndDeterministic() throws {
+        let manifestURL = demoDirectory.appendingPathComponent("sample-manifest.json")
+        let manifest = try DemoManifest.decode(contentsOf: manifestURL)
+
+        XCTAssertEqual(manifest.provenance.classification, "synthetic-public-safe")
+        XCTAssertTrue(manifest.provenance.humanReviewRequiredBeforeCommercialExport)
+
+        let first = try manifest.makeScene(screenSize: CGSize(width: 1_920, height: 1_080))
+        let second = try manifest.makeScene(screenSize: CGSize(width: 1_920, height: 1_080))
+        XCTAssertEqual(first.manifestID, second.manifestID)
+        XCTAssertEqual(first.seed, second.seed)
+        XCTAssertEqual(first.folders.map(\.url), second.folders.map(\.url))
+        XCTAssertEqual(first.files.map(\.url), second.files.map(\.url))
+        XCTAssertEqual(first.agents, second.agents)
+        XCTAssertTrue(first.folders.allSatisfy {
+            $0.url.path.hasPrefix("/UniverseScreenSyntheticDemo/")
+        })
+        XCTAssertTrue(first.agents.allSatisfy {
+            $0.id.hasPrefix("synthetic-") && $0.workspaceURL?.path.hasPrefix("/UniverseScreenSyntheticDemo/") == true
+        })
+    }
+
+    func testManifestRejectsPathLikeLabel() throws {
+        let manifestURL = demoDirectory.appendingPathComponent("sample-manifest.json")
+        let data = try Data(contentsOf: manifestURL)
+        let original = try XCTUnwrap(String(data: data, encoding: .utf8))
+        let unsafe = original.replacingOccurrences(
+            of: "\"Navigator\"",
+            with: "\"/Users/example/private\"")
+        let decoded = try JSONDecoder().decode(
+            DemoManifest.self,
+            from: try XCTUnwrap(unsafe.data(using: .utf8)))
+
+        XCTAssertThrowsError(try decoded.validated())
+    }
+
+    func testCommercialExportPresetIsExactlyFifteenSecond1080p() throws {
+        let presetURL = demoDirectory.appendingPathComponent("export-1080p-15s.json")
+        let preset = try DemoExportPreset.decode(contentsOf: presetURL)
+
+        XCTAssertEqual(preset.durationSeconds, 15)
+        XCTAssertEqual(preset.width, 1_920)
+        XCTAssertEqual(preset.height, 1_080)
+        XCTAssertEqual(preset.framesPerSecond, 30)
+        XCTAssertEqual(preset.expectedFrameCount, 450)
+        XCTAssertEqual(preset.container, "mp4")
+        XCTAssertEqual(preset.codec, "h264")
+        XCTAssertEqual(preset.audio, "none")
+    }
+
+    func testDemoFilesAreBundledWithTheApplication() throws {
+        XCTAssertNotNil(DemoManifest.bundledSampleURL())
+        XCTAssertNotNil(DemoExportPreset.bundledURL())
+    }
+}

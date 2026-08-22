@@ -237,7 +237,7 @@ public struct DashboardView: View {
 
                 DashboardToggleRow(
                     title: "Demo Mode",
-                    detail: "Cinematic styling with live data",
+                    detail: "Checked-in synthetic scene only",
                     symbol: "viewfinder",
                     isOn: binding(get: { model.demoMode }, set: { model.setDemoMode($0) })
                 )
